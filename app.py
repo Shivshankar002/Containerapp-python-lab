@@ -13,8 +13,8 @@ def home():
         </head>
         <body>
             <h1>Hello from Azure Container Apps!</h1>
-            <p>This application was deployed from GitHub source code.</p>
-            <p>No Dockerfile was used.</p>
+            <p>This application was updated locally from VS Code.</p>
+            <p>The latest version was deployed through GitHub Actions.</p>
         </body>
     </html>
     """
