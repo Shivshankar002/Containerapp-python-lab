@@ -1,28 +1,24 @@
 name: Trigger auto deployment for ca-python-source-lab
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/ca-python-source-lab-AutoDeployTrigger-4d1cd95e-a190-4131-bc82-771cf4d0f5bc.yml'
+    branches:
+      - main
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - name: Checkout to the branch
-        uses: actions/checkout@v2
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -31,19 +27,18 @@ jobs:
           tenant-id: ${{ secrets.CAPYTHONSOURCELAB_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.CAPYTHONSOURCELAB_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Build and deploy Container App
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
-          registryUrl: 
+
+          registryUrl: ${{ secrets.CAPYTHONSOURCELAB_REGISTRY_URL }}
           registryUsername: ${{ secrets.CAPYTHONSOURCELAB_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.CAPYTHONSOURCELAB_REGISTRY_PASSWORD }}
+
           containerAppName: ca-python-source-lab
           resourceGroup: rg-containerapp-source-lab
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
 
+          imageToBuild: acrcapythonsourcelab01.azurecr.io/ca-python-source-lab:${{ github.sha }}
 
+          targetPort: 8080
