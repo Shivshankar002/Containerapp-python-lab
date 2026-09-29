@@ -3,6 +3,7 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def home():
     return """
@@ -12,22 +13,23 @@ def home():
         </head>
         <body>
             <h1>Hello from Azure Container Apps!</h1>
-            <p>This application was deployed from source code.</p>
+            <p>This application was deployed from GitHub source code.</p>
             <p>No Dockerfile was used.</p>
-            <p>Environment: Azure Container Apps</p>
         </body>
     </html>
     """
+
 
 @app.route("/info")
 def info():
     return {
         "application": "Container Apps Python Lab",
         "platform": "Azure Container Apps",
-        "deployment": "Source Code",
+        "deployment": "GitHub Source Code",
         "port": os.environ.get("PORT", "8080")
     }
 
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", "8080"))
     app.run(host="0.0.0.0", port=port)
